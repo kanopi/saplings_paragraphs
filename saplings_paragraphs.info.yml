@@ -1,0 +1,5 @@
+name: 'Saplings Paragraphs'
+type: module
+description: 'Customizations to Paragraphs form display for Saplings.'
+core_version_requirement: ^9 || ^10 || ^11
+package: 'Saplings'

@@ -1,0 +1,48 @@
+<?php
+
+/**
+ * @file
+ * Contains saplings_paragraphs.module.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements template_preprocess_paragraph() for preview view mode.
+ */
+function saplings_paragraphs_preprocess_paragraph__preview(array &$variables) {
+  $paragraph = $variables['paragraph'];
+
+  $field_label = '';
+  if ($paragraph->hasField('sa_label') && !$paragraph->sa_label->isEmpty()) {
+    $field_label = $paragraph->sa_label->value;
+  }
+
+  $summary_items = $paragraph->getSummaryItems();
+  if ($field_label) {
+    $summary_items['content'] = [$field_label];
+  }
+
+  // Overwrite content variables with the summary.
+  $variables['content'] = [
+    'summary' => [
+      '#theme' => 'paragraphs_summary',
+      '#summary' => $summary_items,
+    ],
+  ];
+}
+
+/**
+ * Implements hook_field_widget_single_element_WIDGET_TYPE_form_alter().
+ */
+function saplings_paragraphs_field_widget_single_element_paragraphs_form_alter(array &$element, FormStateInterface $form_state, array $context) {
+  if (isset($element['preview'])) {
+    // Paragraphs role visibility might have denied access. Set this to true
+    // to always allow access to the preview in an admin context.
+    $element['preview']['#access'] = TRUE;
+
+    // Move preview into top summary.
+    $element['top']['summary']['preview'] = $element['preview'];
+    unset($element['preview']);
+  }
+}
